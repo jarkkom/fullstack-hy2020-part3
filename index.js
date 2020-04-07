@@ -27,6 +27,15 @@ const persons = [
   }
 ];
 
+app.get('/info', (req, res) => {
+  res.contentType('text/plain');
+  
+  res.write(`Phonebook has info for ${persons.length} people\n`);
+  res.write(new Date().toISOString());
+  res.end();
+});
+
+
 app.get('/api/persons', (req, res) => {
   res.json(persons);
 });
