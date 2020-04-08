@@ -53,14 +53,45 @@ app.get('/api/persons/:id', (req, res) => {
 });
 
 app.post('/api/persons', (req, res) => {
-  const person = req.body;
+  const newPerson = req.body;
 
-  persons = persons.concat({
-    ...person,
-    id: Math.floor(Math.random() * 10000000),
-  });
+  if (!newPerson.name) {
+    res.status(400);
+    res.write(JSON.stringify(
+          { error: 'must have name' })
+      );
+    res.end();
+    return;
+  }
 
-  res.sendStatus(204);
+  if (!newPerson.number) {
+    res.status(400);
+    res.write(JSON.stringify(
+          { error: 'must have number' })
+      );
+    res.end();
+    return;
+  }
+
+  if (persons.find(person => person.name == newPerson.name)) {
+    res.status(409);
+    res.write(JSON.stringify(
+          { error: 'name must be unique' })
+      );
+    res.end();
+    return;
+  }
+
+  person = {
+    ...newPerson,
+    id: Math.floor(Math.random() * 10000000)
+  }
+
+  persons = persons.concat(person);
+
+  res.status(200);
+  res.write(JSON.stringify(person));
+  res.end();
 });
 
 
