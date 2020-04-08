@@ -52,6 +52,18 @@ app.get('/api/persons/:id', (req, res) => {
   res.json(person);
 });
 
+app.post('/api/persons', (req, res) => {
+  const person = req.body;
+
+  persons = persons.concat({
+    ...person,
+    id: Math.floor(Math.random() * 10000000),
+  });
+
+  res.sendStatus(204);
+});
+
+
 app.delete('/api/persons/:id', (req, res) => {
   const id = Number(req.params.id);
 
