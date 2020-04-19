@@ -1,8 +1,10 @@
 const express = require('express');
 const morgan = require('morgan');
+const cors = require('cors');
 
 const app = express();
 
+app.use(cors());
 app.use(express.json());
 app.use(morgan((tokens, req, res) => {
   return [
@@ -68,27 +70,27 @@ app.post('/api/persons', (req, res) => {
 
   if (!newPerson.name) {
     res.status(400);
-    res.write(JSON.stringify(
-          { error: 'must have name' })
-      );
+    res.json(
+      { error: 'must have name' }
+    );
     res.end();
     return;
   }
 
   if (!newPerson.number) {
     res.status(400);
-    res.write(JSON.stringify(
-          { error: 'must have number' })
-      );
+    res.json(
+      { error: 'must have number' }
+    );
     res.end();
     return;
   }
 
   if (persons.find(person => person.name == newPerson.name)) {
     res.status(409);
-    res.write(JSON.stringify(
-          { error: 'name must be unique' })
-      );
+    res.json(
+      { error: 'name must be unique' }
+    );
     res.end();
     return;
   }
@@ -101,7 +103,7 @@ app.post('/api/persons', (req, res) => {
   persons = persons.concat(person);
 
   res.status(200);
-  res.write(JSON.stringify(person));
+  res.json(person);
   res.end();
 });
 
