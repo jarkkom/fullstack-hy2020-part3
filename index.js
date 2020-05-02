@@ -45,29 +45,16 @@ app.post('/api/persons', (req, res, next) => {
   const newPerson = req.body;
 
   if (!newPerson.name) {
-    res.status(400);
-    res.json(
+    res.status(400).jsonjson(
       { error: 'must have name' }
-    );
-    res.end();
+    ).end();
     return;
   }
 
   if (!newPerson.number) {
-    res.status(400);
-    res.json(
+    res.status(400).json(
       { error: 'must have number' }
-    );
-    res.end();
-    return;
-  }
-
-  if (persons.find(person => person.name == newPerson.name)) {
-    res.status(409);
-    res.json(
-      { error: 'name must be unique' }
-    );
-    res.end();
+    ).end();
     return;
   }
 
@@ -76,12 +63,31 @@ app.post('/api/persons', (req, res, next) => {
   });
 
   person.save().then((savedPerson) => {
-    res.status(200);
-    res.json(savedPerson);
-    res.end();
+    res.status(200).json(savedPerson).end();
   }).catch(error => next(error));
 });
 
+app.put('/api/persons/:id', (req, res, next) => {
+  const person = req.body;
+
+  if (!person.name) {
+    res.status(400).jsonjson(
+      { error: 'must have name' }
+    ).end();
+    return;
+  }
+
+  if (!person.number) {
+    res.status(400).json(
+      { error: 'must have number' }
+    ).end();
+    return;
+  }
+
+  Phonebook.findByIdAndUpdate(req.params.id, person, { new: true }).then((updatedPerson) => {
+    res.status(200).json(updatedPerson).end();
+  }).catch(error => next(error));
+});
 
 app.delete('/api/persons/:id', (req, res, next) => {
   const id = req.params.id;
