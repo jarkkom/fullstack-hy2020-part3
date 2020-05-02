@@ -20,14 +20,15 @@ app.use(morgan((tokens, req, res) => {
   ].join(' ');
 }));
 
-app.get('/info', (req, res) => {
+app.get('/info', (req, res, next) => {
   res.contentType('text/plain');
   
-  res.write(`Phonebook has info for ${persons.length} people\n`);
-  res.write(new Date().toISOString());
-  res.end();
+  Phonebook.countDocuments().then((count) => {
+    res.write(`Phonebook has info for ${count} people\n`);
+    res.write(new Date().toISOString());
+    res.end();
+  }).catch(error => next(error));
 });
-
 
 app.get('/api/persons', (req, res, next) => {
   Phonebook.find({}).then(persons => {
@@ -37,7 +38,11 @@ app.get('/api/persons', (req, res, next) => {
 
 app.get('/api/persons/:id', (req, res, next) => {
   const person = Phonebook.findById(req.params.id).then((person) => {
-    res.json(person.toJSON());
+    if (person) {
+      res.json(person.toJSON());
+    } else {
+      res.sendStatus(404);
+    }
   }).catch(error => next(error));
 });
 
@@ -102,7 +107,7 @@ const errorHandler = (err, req, res, next) => {
   if (err.name === 'CastError') {
     return res.status(400).send({ error: 'malformed id'});
   }
-  next(error);
+  next(err);
 };
 
 app.use(errorHandler);
