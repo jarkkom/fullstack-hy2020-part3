@@ -54,7 +54,7 @@ app.get('/info', (req, res) => {
 
 app.get('/api/persons', (req, res) => {
   Phonebook.find({}).then(persons => {
-  res.json(persons);
+    res.json(persons);
   })
 });
 
@@ -100,16 +100,15 @@ app.post('/api/persons', (req, res) => {
     return;
   }
 
-  person = {
+  const person = new Phonebook({
     ...newPerson,
-    id: Math.floor(Math.random() * 10000000)
-  }
+  });
 
-  persons = persons.concat(person);
-
-  res.status(200);
-  res.json(person);
-  res.end();
+  person.save().then((savedPerson) => {
+    res.status(200);
+    res.json(savedPerson);
+    res.end();
+  });
 });
 
 
