@@ -1,8 +1,10 @@
+require('dotenv').config()
+
 const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
-
 const app = express();
+const Phonebook = require('./models/phonebook');
 
 app.use(express.static('build'))
 app.use(cors());
@@ -51,7 +53,9 @@ app.get('/info', (req, res) => {
 
 
 app.get('/api/persons', (req, res) => {
+  Phonebook.find({}).then(persons => {
   res.json(persons);
+  })
 });
 
 app.get('/api/persons/:id', (req, res) => {
