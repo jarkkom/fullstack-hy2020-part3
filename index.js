@@ -29,19 +29,19 @@ app.get('/info', (req, res) => {
 });
 
 
-app.get('/api/persons', (req, res) => {
+app.get('/api/persons', (req, res, next) => {
   Phonebook.find({}).then(persons => {
     res.json(persons);
-  })
+  }).catch(error => next(error));
 });
 
-app.get('/api/persons/:id', (req, res) => {
+app.get('/api/persons/:id', (req, res, next) => {
   const person = Phonebook.findById(req.params.id).then((person) => {
     res.json(person.toJSON());
-  });
+  }).catch(error => next(error));
 });
 
-app.post('/api/persons', (req, res) => {
+app.post('/api/persons', (req, res, next) => {
   const newPerson = req.body;
 
   if (!newPerson.name) {
@@ -79,17 +79,27 @@ app.post('/api/persons', (req, res) => {
     res.status(200);
     res.json(savedPerson);
     res.end();
-  });
+  }).catch(error => next(error));
 });
 
 
-app.delete('/api/persons/:id', (req, res) => {
+app.delete('/api/persons/:id', (req, res, next) => {
   const id = req.params.id;
 
   Phonebook.findByIdAndRemove(id).then((result) => {
     res.sendStatus(204);
-  });
+  }).catch(error => next(error));
 });
+
+const errorHandler = (err, req, res, next) => {
+  console.error(err.message);
+  if (err.name === 'CastError') {
+    return res.status(400).send({ error: 'malformed id'});
+  }
+  next(error);
+};
+
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
