@@ -50,7 +50,7 @@ app.post('/api/persons', (req, res, next) => {
   const newPerson = req.body;
 
   if (!newPerson.name) {
-    res.status(400).jsonjson(
+    res.status(400).json(
       { error: 'must have name' }
     ).end();
     return;
